@@ -3,7 +3,7 @@ import session from 'express-session';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
-import { initDb, dbGet } from './db.js';
+import { initDb, dbGet, DATA_DIR } from './db.js';
 import { runSeeder } from './seed.js';
 
 // Routers
@@ -18,7 +18,6 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Ensure uploads directory exists
-const DATA_DIR = process.env.DATA_DIR || __dirname;
 const uploadsDir = path.join(DATA_DIR, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });

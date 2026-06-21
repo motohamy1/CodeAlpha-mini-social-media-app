@@ -3,7 +3,7 @@ import multer from 'multer';
 import path from 'path';
 import crypto from 'crypto';
 import fs from 'fs';
-import { dbAll, dbGet, dbRun } from '../db.js';
+import { dbAll, dbGet, dbRun, DATA_DIR } from '../db.js';
 import { requireAuth } from '../middleware/auth.js';
 
 const router = express.Router();
@@ -11,7 +11,6 @@ const router = express.Router();
 // Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const DATA_DIR = process.env.DATA_DIR || process.cwd();
     cb(null, path.join(DATA_DIR, 'uploads'));
   },
   filename: (req, file, cb) => {
@@ -156,7 +155,6 @@ router.delete('/:id', requireAuth, async (req, res, next) => {
 
     // Delete file from disk
     const relativeImagePath = post.image_url.startsWith('/') ? post.image_url.slice(1) : post.image_url;
-    const DATA_DIR = process.env.DATA_DIR || process.cwd();
     const absoluteImagePath = path.join(DATA_DIR, relativeImagePath);
     fs.unlink(absoluteImagePath, (err) => {
       if (err) console.error('Failed to delete image file:', err.message);

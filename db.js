@@ -2,9 +2,20 @@ import sqlite3 from 'sqlite3';
 import { promisify } from 'util';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const DATA_DIR = process.env.DATA_DIR || __dirname;
+
+let resolvedDataDir = process.env.DATA_DIR || __dirname;
+try {
+  fs.mkdirSync(resolvedDataDir, { recursive: true });
+  fs.accessSync(resolvedDataDir, fs.constants.W_OK);
+} catch (e) {
+  console.warn(`Warning: DATA_DIR "${resolvedDataDir}" is not writable/creatable. Falling back to local project root.`);
+  resolvedDataDir = __dirname;
+}
+
+export const DATA_DIR = resolvedDataDir;
 const dbPath = path.resolve(DATA_DIR, 'database.sqlite');
 
 const db = new sqlite3.Database(dbPath, (err) => {
